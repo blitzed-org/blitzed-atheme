@@ -1,129 +1,10 @@
-/* This is an example configuration for Services.
- *
- * All statements end in semi-colons (';').
- * Shell style, C style, and C++ style comments may be used.
- *
- * Items marked with "(*)" are reconfigurable at runtime via REHASH.
- */
-
-/******************************************************************************
- * MODULES SECTION.                                                           *
- ******************************************************************************/
-
-/*
- * These are the modules included with the core distribution of Services.
- *
- * You may be interested in the atheme community modules distribution as 
- * well, which adds additional features that may or may not be compatible
- * with the project paradigms intended for maintainance of the core of
- * atheme-services.
- *
- * Visit the atheme-services website for more information and to download them.
- *
- * Modules marked [experimental] will taint your atheme-services instance. Do
- * not file any bug reports with us about using Services with those modules;
- * they will be ignored.
- */
-
-/* Protocol module.
- *
- * Please select a protocol module. Different servers use different protocols.
- * Below is a listing of ircd's known to work with the various protocol modules
- * available.
- *
- * Asuka 1.2.1 or later				modules/protocol/asuka
- * Bahamut 1.8.x				modules/protocol/bahamut
- * Beware IRCd (bircd)				modules/protocol/bircd
- * Charybdis IRCd				modules/protocol/charybdis
- * DreamForge 4.6.7 or later			modules/protocol/dreamforge
- * Hybrid 7.1.2 and later			modules/protocol/hybrid
- * ircd-ratbox 2.0 and later			modules/protocol/ratbox
- * IRCNet ircd (ircd 2.11)			modules/protocol/ircnet
- * ircd-seven                                   modules/protocol/ircd-seven
- * ircu 2.10.11.07 or later			modules/protocol/undernet
- * InspIRCd 1.2+				modules/protocol/inspircd12
- * Nefarious IRCu 0.4.0 or later		modules/protocol/nefarious
- * PleXusIRCd 3.x				modules/protocol/plexus
- * PTlink IRCd					modules/protocol/ptlink
- * ShadowIRCd 5.0 or later			modules/protocol/shadowircd
- * UnrealIRCd 3.1/3.2				modules/protocol/unreal
- *
- * If your IRCd vendor has supplied a module file, build it and load it here
- * instead of one above.
- */
 loadmodule "modules/protocol/charybdis";
-
-/* Protocol mixins.
- *
- * These should be used if you do not have/want certain features on your
- * network that your ircd normally has. If you do not know what this means,
- * you do not need any of them.
- *
- * Disable halfops				modules/protocol/mixin_nohalfops
- * Disable holdnick (use enforcer clients)     modules/protocol/mixin_noholdnick
- * Disable "protect" mode on channels		modules/protocol/mixin_noprotect
- * Disable "owner" mode on channels		modules/protocol/mixin_noowner
- */
 #loadmodule "modules/protocol/mixin_nohalfops";
 #loadmodule "modules/protocol/mixin_noholdnick";
 #loadmodule "modules/protocol/mixin_noprotect";
 #loadmodule "modules/protocol/mixin_noowner";
-
-/* Database backend module.
- * 
- * Please select a database backend module. Different backends allow for
- * different ways in which the services data can be manipulated. YOU MAY
- * ONLY HAVE ONE OF THESE BACKENDS LOADED.
- * 
- * The following backends are available:
- * 
- * Atheme 0.1 flatfile database format		modules/backend/flatfile
- * Open Services Exchange database format	modules/backend/opensex
- * 
- * Most networks will want opensex.
- */
 loadmodule "modules/backend/opensex";
-
-/* Crypto module.
- *
- * If you would like encryption for your services passwords, please
- * select a module here. Note that upon starting with a crypto module
- * YOUR PASSWORDS ARE IMMEDIATELY AND IRREVERSIBLY CONVERTED. Make at
- * least TWO backups of your database before experimenting with this.
- * If you have several thousand accounts, this conversion may take
- * appreciable time.
- *
- * The following crypto modules are available:
- *
- * POSIX-style crypt(3)				modules/crypto/posix
- * IRCServices (also Anope etc) compatibility	modules/crypto/ircservices
- * SorceryNet services compatibility		modules/crypto/sorservices
- * Raw MD5 (Anope compatibility)		modules/crypto/rawmd5
- * Raw SHA1 (Anope compatibility)		modules/crypto/rawsha1
- *
- * The ircservices, sorservices, rawmd5 and rawsha1 modules are only
- * recommended for use with a database converted from other services with
- * password encryption.
- *
- * The rawsha1 module requires OpenSSL.
- */
-loadmodule "modules/crypto/posix";
-
-/* Authentication module.
- *
- * These allow using passwords from an external system. The password given
- * when registering a new account is also checked against the external
- * system.
- *
- * The following authentication modules are available:
- *
- * LDAP						modules/auth/ldap
- *
- * The LDAP module requires OpenLDAP client libraries. It uses them in a
- * synchronous manner, which means that an unresponsive LDAP server can
- * freeze services.
- */
-#loadmodule "modules/auth/ldap";
+loadmodule "modules/crypto/saltedsha1";
 
 /* NickServ modules.
  *
@@ -185,11 +66,11 @@ loadmodule "modules/crypto/posix";
  * VHOST command				modules/nickserv/vhost
  */
 loadmodule "modules/nickserv/main";
-#loadmodule "modules/nickserv/access";
+loadmodule "modules/nickserv/access";
 #loadmodule "modules/nickserv/cert";
 #loadmodule "modules/nickserv/cracklib";
 loadmodule "modules/nickserv/drop";
-#loadmodule "modules/nickserv/enforce";
+loadmodule "modules/nickserv/enforce";
 loadmodule "modules/nickserv/ghost";
 loadmodule "modules/nickserv/group";
 loadmodule "modules/nickserv/help";
@@ -209,7 +90,7 @@ loadmodule "modules/nickserv/regnolimit";
 loadmodule "modules/nickserv/resetpass";
 loadmodule "modules/nickserv/return";
 loadmodule "modules/nickserv/setpass";
-#loadmodule "modules/nickserv/sendpass";
+loadmodule "modules/nickserv/sendpass";
 loadmodule "modules/nickserv/sendpass_user";
 loadmodule "modules/nickserv/set_core";
 loadmodule "modules/nickserv/set_accountname";
@@ -223,7 +104,7 @@ loadmodule "modules/nickserv/set_nomemo";
 loadmodule "modules/nickserv/set_noop";
 loadmodule "modules/nickserv/set_password";
 #loadmodule "modules/nickserv/set_privmsg";
-#loadmodule "modules/nickserv/set_private";
+loadmodule "modules/nickserv/set_private";
 loadmodule "modules/nickserv/set_property";
 loadmodule "modules/nickserv/set_quietchg";
 #loadmodule "modules/nickserv/subscribe";

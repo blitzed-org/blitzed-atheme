@@ -54,3 +54,5 @@ NICKSERV
   a SET HOLD flag added on conversion. Marked accounts are not 
   exempt from expiration.
 - SET REGTIME no longer exists
+- SET LANGUAGE exists, but the only targets are currently en. All 
+  accounts will be converted to English.

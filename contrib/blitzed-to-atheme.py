@@ -102,6 +102,19 @@ NI_SUSPENDED = 0x10000000
 #    ['b'] = {CA_AKICK, 0, false,     "banned"},
 #};
 
+LANG_EN_US = 0
+LANG_JA_JIS= 1
+LANG_JA_EUC= 2
+LANG_JA_SJIS =   3
+LANG_ES=     4
+LANG_PT=     5
+LANG_FR=     6
+LANG_TR=     7
+LANG_IT=     8
+LANG_PSYCHO= 9
+LANG_DE=     10
+LANG_DK=     11
+LANG_SE=     12
 
 def main():
     f = open('services.db', 'w')
@@ -150,7 +163,7 @@ def write_nicks(cursor, f):
                 row['time_registered'],
                 row['last_seen'],
                 flags,
-                "default"   
+                "en"   
             ))
 
         if (blitzed_flags & NI_ENFORCE):
