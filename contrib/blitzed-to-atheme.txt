@@ -65,3 +65,11 @@ NICKSERV
   with a forbider of "services", a forbid time of now(), and 
   the original forbid reason.
 - SUSPEND is now SET FREEZE, and these data have not been converted. 
+
+
+MEMOSERV
+--------
+
+- Blitzed does not keep track of memo read state, but Atheme does.
+  On conversion, all memos have been marked READ.
+ 

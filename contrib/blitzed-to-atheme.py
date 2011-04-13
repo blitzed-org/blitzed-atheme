@@ -1,4 +1,5 @@
 import MySQLdb
+import encodings.rot_13
 import time
 
 NS_FORBID = 0x0002
@@ -127,6 +128,7 @@ def main():
     write_forbidden_nicks(cursor, f)
     write_nick_links(cursor, f)
     write_nick_access(cursor, f)
+    write_memos(cursor, f)
     write_footer(f)
     
     f.close()
@@ -244,6 +246,18 @@ def write_nick_access(cursor, f):
                 row['userhost']
             ))
 
+def write_memos(cursor, f):
+    cursor.execute("SELECT * FROM memo")
+    decoder = encodings.rot_13.Codec()
+
+    for row in cursor.fetchall():
+        text = decoder.decode(row['text'])
+        f.write("ME %s %s %s 1 %s\n" % (
+                row['owner'],
+                row['sender'],
+                row['time'],
+                text[0].encode('utf-8')
+            ))
 
 def write_footer(f):
     f.write("GDBV 3\n")
