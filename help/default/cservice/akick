@@ -1,0 +1,26 @@
+Help for AKICK:
+
+The AKICK command allows you to maintain channel
+ban lists.  Users on the AKICK list will be
+automatically kickbanned when they join the channel,
+removing any matching ban exceptions first. Users
+with the +r flag are exempt.
+
+You may also specify a hostmask (nick!user@host)
+for the AKICK list.
+
+Removing an entry from the AKICK list will not
+remove any channel bans placed by it.
+
+The reason is used when kicking and is visible in
+AKICK LIST. If the reason contains a '|' character,
+everything after it does not appear in kick reasons
+but does appear in AKICK LIST.
+
+Syntax: AKICK <#channel> ADD|DEL|LIST <nickname|hostmask> [reason]
+
+Examples:
+    /msg &nick& AKICK #foo ADD bar you are annoying | private op info
+    /msg &nick& AKICK #foo ADD *!*foo@bar.com
+    /msg &nick& AKICK #foo DEL bar
+    /msg &nick& AKICK #foo LIST

@@ -1,0 +1,8 @@
+Help for WAITING:
+
+WAITING lists all vhosts currently waiting for activation.
+
+Syntax: WAITING
+
+Examples:
+    /msg &nick& WAITING

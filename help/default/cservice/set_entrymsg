@@ -1,0 +1,10 @@
+Help for SET ENTRYMSG:
+
+SET ENTRYMSG allows you to change or set
+a message sent to all users joining the
+channel.
+
+Syntax: SET <#channel> ENTRYMSG [message]
+
+Example:
+    /msg &nick& SET #support ENTRYMSG Welcome to #support. Please do not paste more than 5 lines.

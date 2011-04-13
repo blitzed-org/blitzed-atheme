@@ -1,0 +1,133 @@
+Fine grained operator privileges
+--------------------------------
+
+Terminology:
+
+IRCop
+	user with user mode +o, usually obtained with /oper
+	users whose operator status is indicated by a different user mode
+	than +o, or whose user mode +o is not propagated to other servers,
+	are not IRCops from atheme's point of view
+operclass
+	group of privileges defined in an operclass{} block in atheme.conf
+config services operator
+	user logged into an account named in an operator{} block in
+	atheme.conf
+services operator
+	user logged into an account named in an operator{} block in
+	atheme.conf or an account granted privileges with /os soper
+
+Note that an account cannot have both an operator{} block and privileges
+granted with /os soper. If this happens, the privileges from /os soper
+will be discarded.
+
+A few privileges are granted independently of operclasses:
+
+To all IRCops and services operators (has_any_priv()):
+	more detailed "not authorized" messages telling which priv they are
+	missing, ability to use /os help
+
+To all config services operators:
+	account does not expire (unlike HOLD, extra grouped nicknames do);
+	this is to avoid someone else registering the account and taking
+	the privs
+
+To all services operators:
+	operations like drop, sendpass and return are restricted
+
+All IRCops get the privileges in the "ircop" operclass. Services operators
+get the privileges in the operclass in their operator{} block or the
+operclass set with /os soper. However, if the operclass has the needoper
+flag set, privileges are only granted to IRC users if they are IRCops, and
+if the services operator has a password set, privileges are only granted to
+IRC users if they have entered that password using the OperServ IDENTIFY
+command. If both conditions apply, the union of the privileges is granted.
+
+The OperServ SPECS command shows the privileges granted to an online user
+or operclass, in a somewhat wordy format. /stats o and SOPER LIST show all
+services operators. SOPER LISTCLASS shows all operclasses.
+
+Description of the privileges in operclasses:
+
+special:ircop
+	bound to AC_IRCOP, if you still have modules using that
+special:disabled
+	for internal use, used to hide commands without meaning
+	do not add this to operclasses
+
+user:auspex
+	see the invisible about user registrations,
+	ns/us info/list mainly
+	also allows searching information about online users,
+	os rnc/rmatch/rwatch
+user:admin
+	administer users
+user:sendpass
+	send user passwords to their email addresses, or in case of
+	nickserv/sendpass_user, use the CLEAR option
+user:vhost
+	set vhosts
+user:fregister
+	use /ns fregister (contrib module) to register accounts on behalf of
+	someone else
+
+chan:auspex
+	see the invisible about channels and channel registrations,
+	cs info/list/flags, ns/us listchans, os compare mainly
+chan:admin
+	administer channels
+chan:cmodes
+	change oper-only cmodes in mode locks (but only on own channels)
+chan:joinstaffonly
+	join channels set restricted, even if not on the access list
+
+user:mark
+	use ns/us/cs mark and override marks
+user:hold
+	use ns/us/cs hold to prevent things from expiring
+user:regnolimit
+	exempt from limits on numbers of registrations (does not work
+	fully if set on the ircop operclass)
+
+general:auspex
+	see general information about services: most privileged /stats,
+	/trace, /os modinspect, /os modlist, /os uptime
+	the idea is that this does not violate user privacy
+general:viewprivs
+	see all operator{} blocks, see the privs users and operclasses have:
+	/stats o, /os specs
+general:flood
+	exempt from services flood control (general::flood* in atheme.conf)
+general:metadata
+	mess with private metadata (but only on own accounts and channels)
+general:admin
+	restart/shutdown/rehash services, load modules, use raw/inject (if
+	globally allowed in atheme.conf), resetpass/sendpass on accounts
+	with operator{} blocks, use /os ignore
+
+operserv:omode
+	use /os mode
+operserv:akill
+	use /os akill and /stats k
+operserv:massakill
+	do mass kills and akills on channels and regular expressions (/os
+	clearchan/rakill/rwatch), use /os sgline and /stats x
+	this may also need chan:admin or user:auspex depending on the command
+operserv:akill-anymask
+	set akills which do not have any non-wildcard requirements
+operserv:jupe
+	use /os jupe
+operserv:noop
+	use /os noop
+operserv:global
+	send global notices
+operserv:grant
+	use /os soper add/del
+operserv:override
+	use /os override to run services commands as other users
+
+group:auspex
+	see the invisible about groups and group registrations,
+	groupserv info/list/flags, ns/us listgroups mainly
+group:admin
+	administer groups

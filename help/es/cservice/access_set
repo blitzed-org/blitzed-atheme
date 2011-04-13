@@ -1,0 +1,8 @@
+Ayuda para ACCESS SET:
+
+ACCESS SET cambia el rol del usuario especificado.
+
+Sintaxis: ACCESS <#ccanal> SET <usuario> <rol>
+
+Ejemplos:
+    /msg &nick& ACCESS #atheme SET stitch staff-nivel3

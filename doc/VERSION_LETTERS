@@ -1,0 +1,19 @@
+Letters in version responses
+----------------------------
+
+Version replies (from /version or ctcp version) contain a sequence
+of letters like FljR. Their meaning is as follows:
+
+A - ASCII casemapping is used
+a - external authentication is used
+c - an encryption module is loaded
+d - debug logging is enabled
+e - nick/account registration requires email verification
+F - flood checking is enabled
+l - leave_chans is enabled
+j - join_chans is enabled
+t - changets is enabled (shown as of 2.1)
+R - RFC1459 casemapping is used
+r - operserv raw can be used
+n - services is attached to a terminal
+T - services is tainted (running an unsupported configuration)

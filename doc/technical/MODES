@@ -1,0 +1,107 @@
+User modes
+----------
+
+The Atheme core knows the following user modes:
+
++i	invisible, only tracked for use by modules
++o	IRC operator
+
+Some protocol modules recognize additional user modes.
+
+User modes are stored in user_t.flags together with other state information.
+
+Channel modes
+-------------
+
+The following types of channel modes exist:
+
+A	ban-like (list)
+B	simple, with parameter both when set and unset
+C	simple, with parameter only when set
+D	simple, no parameter
+E	prefix
+
+Modes of type E are characterized both by a letter and by a special
+character to be prefixed to a nick (or UID).
+
+The Atheme core knows the following channel modes:
+
+A	+b	channel ban
+B	+k	channel key (password)
+C	+l	user limit
+E	+o (@)	channel operator
+E	+v (+)	voice
+
+Protocol modules can define more modes of types A (ircd->ban_like_modes),
+C (ignore_mode_list), D (mode_list) and E (status_mode_list,
+prefix_mode_list).
+
+The mode_list should contain at least +i, +m, +n, +s and +t with the
+standard values.
+
+The Atheme core has special treatment for the following extended channel modes:
+A	ban exception		ircd->except_mchar
+A	invite exception	ircd->invex_mchar
+D	permanent channel	ircd->perm_mode
+E	halfop			ircd->uses_halfops, ircd->halfops_mode, ircd->halfops_mchar
+E	channel protection	ircd->uses_protect, ircd->protect_mode, ircd->protect_mchar
+E	channel founder		ircd->uses_owner, ircd->owner_mode, ircd->owner_mchar
+
+Ban exceptions are assumed to allow matching users in through bans but not
+through invite-only. Invite exceptions are assumed to allow matching users in
+through invite-only but not through bans. If one "exception" mode does both,
+put it both in ircd->except_mchar and ircd->invex_mchar (e.g. Nefarious).
+If multiple modes fulfill the same function but with different matching (e.g.
++b and +d bans in hyperion), use a custom next_matching_ban().
+
+The different types of modes are stored as follows:
+A	channel_t.bans
+B	channel_t.key
+C	channel_t.limit, channel_t.extmodes
+D	channel_t.modes
+E	chanuser_t.modes
+
+channel_t.key and channel_t.extmodes are smalloc/sstrdup'ed strings and are
+NULL if the mode is not set.
+
+Channel mode locks
+------------------
+
+Mode locks are stored as follows (only simple modes can be mlocked):
+B	mychan_t.mlock_key
+C	mychan_t.mlock_limit, mychan_t metadata private:mlockext
+D	mychan_t.mlock_on, mychan_t.mlock_off
+
+Key/limit mlocked off are stored as CMODE_KEY/CMODE_LIMIT flags in
+mychan_t.mlock_off. Key/limit mlocked on do not use CMODE_KEY/CMODE_LIMIT
+flags.
+
+Modes of type D can be marked oper-only with ircd->oper_only_modes. This
+prevents users without chan:cmodes privilege from changing those modes in
+mode locks. The other modes in the mlock can be changed and the oper-only
+modes will remain untouched.
+
+The format of private:mlockext is a space-separated sequence of
+<modechar><value>. If the value is empty, that mode is mlocked off. Modes
+which are not mentioned are not mlocked. The metadata entry is only present
+if any ignore_mode_list modes are mlocked.
+
+Mode lock checks are scheduled in a sophisticated way to avoid annoying
+redundant mode changes showing up while still keeping the modes correct, in
+all supported ircds:
+- on creation of a channel and on TS changes (these often clear all simple
+  modes), mark the channel registration MC_MLOCK_CHECK
+- on an incoming mode change, if the channel registration is marked
+  MC_MLOCK_CHECK or the mode change altered simple modes, check the mode
+  locks; prefixed nicks on SJOIN/FJOIN/NJOIN do not count as mode changes,
+  but simple modes on SJOIN do
+- on creation of a channel, if it is possible that no mode changes (according
+  to the previous item) are sent for this channel, check mode locks right away
+  (this is done by faking an incoming mode change "+")
+- when a channel is registered or the mode locks are changed, check the
+  mode locks right away
+- when kicking a user because of restricted, the mlock includes +i and the
+  channel is not +i yet, check the mode locks right away
+- when kicking a user because of mlock +i and the channel is not +i yet, check
+  the mode locks right away
+- on any mode lock check, clear MC_MLOCK_CHECK if it is set

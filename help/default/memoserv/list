@@ -1,0 +1,11 @@
+Help for LIST:
+
+LIST shows you your memos in your inbox,
+including who sent them and when. To read a
+memo, use the READ command. You can also
+DELETE or FORWARD a memo.
+
+Syntax: LIST
+
+Examples:
+    /msg &nick& LIST

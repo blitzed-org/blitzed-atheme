@@ -1,0 +1,26 @@
+Ayuda para POST:
+
+POST le permite enviar mensajes a todos los usuarios por una vez (enviados
+al ejecutar el comando), o mensajes que verán al conectarse, o mensajes
+que sólo los operadores recibirán al utilizar /OPER.
+
+Los guiones bajos ("_") en el Asunto serán reemplazados con espacios.
+
+IMPORTANCIA:
+    La importancia define el tipo de mensaje que será enviado.
+
+    0 - Mostrar sólo a operadores al usar /OPER.
+    1 - Mostrar a los usuarios sólo al conectarse.
+    2 - Envía un anuncio a todos los usuarios inmediatamente.
+    3 - Mostrar un mensaje a todos los usuarios al conectarse, Y enviar
+            un anuncio a todos ahora.
+    4 - Envíar un mensaje privado a todos los usuarios ahora. Nótese que
+            esto puede resultar molesto a los destinatarios y debiese ser
+            usado sólo si es necesario.
+
+
+Sintaxis: POST <importancia> <asunto> <mensaje>
+
+Ejemplo:
+    /msg &nick& POST 2 Info1 Información importante para los usuarios.
+    /msg &nick& POST 1 Asunto_de_varias_palabras Algo más de información.
