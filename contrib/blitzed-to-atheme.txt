@@ -35,6 +35,10 @@ NICKSERV
 
 - AUTOJOIN no longer exists
 
+- FORBID exists on Atheme, but unlike Blitzed it's reversible. Blitzed 
+  drops all useful meta data on a user before forbidding them. Because 
+  of this, the forbidden nicks were not converted.
+
 - SET HIDEEMAIL, EMAIL, ENFORCE, NOOP
    have been converted
 - SET PRIVATE has changed. The old functionality no longer 
@@ -56,3 +60,4 @@ NICKSERV
 - SET REGTIME no longer exists
 - SET LANGUAGE exists, but the only targets are currently en. All 
   accounts will be converted to English.
+- SUSPEND is now SET FREEZE, and these data have not been converted. 
