@@ -52,7 +52,8 @@ NICKSERV
 - SET SECURE no longer exists and is implicitly on for all users
 - SET HIDE no longer exists
 - SET SENDPASS no longer exists, but SET MARK will protect an 
-  account from being sendpassed or set pass. 
+  account from being sendpassed or set pass, unless FORCE is
+  used on the SENDPASS command. 
 - SET AUTOJOIN no longer exists
 - SET NOEXPIRE is now SET HOLD. Any users with SET IRCOP have 
   a SET HOLD flag added on conversion. Marked accounts are not 
@@ -60,4 +61,7 @@ NICKSERV
 - SET REGTIME no longer exists
 - SET LANGUAGE exists, but the only targets are currently en. All 
   accounts will be converted to English.
+- FORBID is a contrib module. The data has been converted over, 
+  with a forbider of "services", a forbid time of now(), and 
+  the original forbid reason.
 - SUSPEND is now SET FREEZE, and these data have not been converted. 

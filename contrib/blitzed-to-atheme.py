@@ -1,4 +1,5 @@
 import MySQLdb
+import time
 
 NS_FORBID = 0x0002
 NS_NO_EXPIRE = 0x0004
@@ -123,6 +124,7 @@ def main():
 
     write_header(f)
     write_nicks(cursor, f)
+    write_forbidden_nicks(cursor, f)
     write_nick_links(cursor, f)
     write_nick_access(cursor, f)
     write_footer(f)
@@ -183,6 +185,37 @@ def write_nicks(cursor, f):
                     row['lat'],
                     row['lng'],
             ))
+
+def write_forbidden_nicks(cursor, f):
+    cursor.execute("SELECT * FROM nick WHERE time_registered = 0")
+
+    for row in cursor.fetchall():
+        flags = "+hb"
+        f.write("MU %s * noemail %s %s %s %s\n" % (
+                row['nick'],
+                row['time_registered'],
+                row['last_seen'],
+                flags,
+                "en"   
+            ))
+        
+        f.write("MDU %s private:doenforce 1\n" % (
+            row['nick']
+        ))
+            
+        f.write("MDU %s private:freeze:freezer services\n" % (
+            row['nick']
+        ))
+
+        f.write("MDU %s private:freeze:reason %s\n" % ( 
+            row['nick'],
+            row['forbid_reason']
+        ))
+
+        f.write("MDU %s private:freeze:timestamp %u\n" % (
+            row['nick'],
+            int(time.time())
+        ))
 
 def write_nick_links(cursor, f):
     cursor.execute("SELECT nick.nick as nick,linked_nicks.nick as linked_nick, " +
