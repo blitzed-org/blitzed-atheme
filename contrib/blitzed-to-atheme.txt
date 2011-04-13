@@ -30,5 +30,27 @@ NICKSERV
   to atheme format. Atheme has ACCESS DEL <mask> instead of 
   ACCESS DEL <num> like blitzed. 
 
-- SET HIDE EMAIL has been converted to SET HIDEMAIL
-- SET OPER no longer exists
+- SENDPASS exists as a module, but there is no SET SENDPASS to 
+  allow or deny on a nick
+
+- AUTOJOIN no longer exists
+
+- SET HIDEEMAIL, EMAIL, ENFORCE, NOOP
+   have been converted
+- SET PRIVATE has changed. The old functionality no longer 
+  applies, because nick lists are hidden.
+- SET HIDE has been converted to the new SET PRIVATE. Any user 
+  with SET HIDE on MASK or QUIT will have SET PRIVATE set on
+  the converted account. 
+- SET COORDS is now a property 'coords'. This could be pulled into 
+  a module for easier setting
+- SET IRCOP  no longer exists
+- SET SECURE no longer exists and is implicitly on for all users
+- SET HIDE no longer exists
+- SET SENDPASS no longer exists, but SET MARK will protect an 
+  account from being sendpassed or set pass. 
+- SET AUTOJOIN no longer exists
+- SET NOEXPIRE is now SET HOLD. Any users with SET IRCOP have 
+  a SET HOLD flag added on conversion. Marked accounts are not 
+  exempt from expiration.
+- SET REGTIME no longer exists

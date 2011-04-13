@@ -15,7 +15,7 @@ NS_TEMPORARY = 0xFF00
 #/*! \brief SVSNICK others who take this nick. */
 NI_ENFORCE = 0x00000001
 # /*! \brief Don't recognise unless IDENTIFY'd. */
-NI_SECURE =	0x00000002
+NI_SECURE = 0x00000002
 # /*! \brief Don't allow user to change memo limit. */
 NI_MEMO_HARDMAX = 0x00000008
 # /*! \brief Notify of memos at signon and un-away. */
@@ -33,7 +33,7 @@ NI_HIDE_QUIT = 0x00000200
 # /*! \brief SVSNICK in 20 seconds instead of 60. */
 NI_ENFORCEQUICK = 0x00000400
 # /*! \brief Don't add user to channel access lists. */
-NI_NOOP	= 0x00000800
+NI_NOOP = 0x00000800
 NI_IRCOP = 0x00001000
 #/*! \brief Only a services admin can SETPASS this nick. */
 NI_MARKED = 0x00002000
@@ -104,90 +104,107 @@ NI_SUSPENDED = 0x10000000
 
 
 def main():
-	f = open('services.db', 'w')
-	db = MySQLdb.connect("localhost", "services", "services", "services")
-	cursor = db.cursor(cursorclass=MySQLdb.cursors.DictCursor)
+    f = open('services.db', 'w')
+    db = MySQLdb.connect("localhost", "services", "services", "services")
+    cursor = db.cursor(cursorclass=MySQLdb.cursors.DictCursor)
 
-	write_header(f)
-	write_nicks(cursor, f)
-	write_nick_links(cursor, f)
-	write_nick_urls(cursor, f)
-	write_nick_access(cursor, f)
-	write_footer(f)
-	
-	f.close()
+    write_header(f)
+    write_nicks(cursor, f)
+    write_nick_links(cursor, f)
+    write_nick_access(cursor, f)
+    write_footer(f)
+    
+    f.close()
 
 def write_header(f):
-	f.write("DBV 8\n")
-	f.write("CF +AFORVbfiorstv\n")
+    f.write("DBV 8\n")
+    f.write("CF +AFORVbfiorstv\n")
 
 def write_nicks(cursor, f):
-	cursor.execute("SELECT * FROM nick WHERE time_registered > 0 AND link_id = 0")
+    cursor.execute("SELECT * FROM nick WHERE time_registered > 0 AND link_id = 0")
 
-	for row in cursor.fetchall():
-		blitzed_flags = int(row['flags'])
+    for row in cursor.fetchall():
+        blitzed_flags = int(row['flags'])
 
-		flags = "+C"
+        flags = "+C"
 
-		if (blitzed_flags & NI_HIDE_EMAIL):
-			flags += "s" 
+        if (blitzed_flags & NI_HIDE_EMAIL):
+            flags += "s" 
+        
+        if (blitzed_flags & NI_NOOP):
+            flags += "o"
 
-		f.write("MU %s $rawsha1$%s$salt$%s %s %s %s %s %s\n" % (
-				row['nick'],
-				row['pass'],
-				row['salt'],
-				row['email'],
-				row['time_registered'],
-				row['last_seen'],
-				flags,
-			    "default"	
-			))
+        if (blitzed_flags & NI_HIDE_MASK or 
+            blitzed_flags & NI_HIDE_QUIT):
+            flags += "p"
 
+        if (blitzed_flags & NS_NO_EXPIRE or
+            blitzed_flags & NI_IRCOP):
+            flags += "h"
+
+        f.write("MU %s $rawsha1$%s$salt$%s %s %s %s %s %s\n" % (
+                row['nick'],
+                row['pass'],
+                row['salt'],
+                row['email'],
+                row['time_registered'],
+                row['last_seen'],
+                flags,
+                "default"   
+            ))
+
+        if (blitzed_flags & NI_ENFORCE):
+            f.write("MDU %s private:doenforce 1\n" % (
+                row['nick']
+            ))
+
+        if (len(row['url']) > 0):
+            f.write("MDU %s url %s\n" % (
+                    row['nick'],
+                    row['url']
+            ))
+
+        if (row['lat'] > 0 and row['lng'] > 0):
+            f.write("MDU %s coords %s %s\n" % (
+                    row['nick'],
+                    row['lat'],
+                    row['lng'],
+            ))
 
 def write_nick_links(cursor, f):
-	cursor.execute("SELECT nick.nick as nick,linked_nicks.nick as linked_nick, " +
-			       "linked_nicks.time_registered as time_registered, " +
-				   "linked_nicks.last_seen as last_seen " + 
+    cursor.execute("SELECT nick.nick as nick,linked_nicks.nick as linked_nick, " +
+                   "linked_nicks.time_registered as time_registered, " +
+                   "linked_nicks.last_seen as last_seen " + 
                    "FROM nick,nick as linked_nicks " +
                    "WHERE linked_nicks.link_id=nick.nick_id " +
                    "AND linked_nicks.time_registered > 0 " +
-				   "AND linked_nicks.link_id > 0")
+                   "AND linked_nicks.link_id > 0")
 
-	for row in cursor.fetchall():
-		f.write("MN %s %s %s %s\n" % (
-				row['nick'],
-				row['linked_nick'],
-				row['time_registered'],
-				row['last_seen']
-			))
-
-def write_nick_urls(cursor, f):
-	cursor.execute("SELECT nick,url FROM nick " +
-				   "WHERE time_registered > 0 AND link_id = 0 AND LENGTH(url) > 0")
-
-	for row in cursor.fetchall():
-		f.write("MDU %s url %s\n" % (
-				row['nick'],
-				row['url']
-			))
+    for row in cursor.fetchall():
+        f.write("MN %s %s %s %s\n" % (
+                row['nick'],
+                row['linked_nick'],
+                row['time_registered'],
+                row['last_seen']
+            ))
 
 def write_nick_access(cursor, f):
-	cursor.execute("SELECT nick,userhost FROM nick,nickaccess " +
-					"WHERE nickaccess.nick_id=nick.nick_id")
+    cursor.execute("SELECT nick,userhost FROM nick,nickaccess " +
+                    "WHERE nickaccess.nick_id=nick.nick_id")
 
-	for row in cursor.fetchall():
-		f.write("AC %s %s\n" % (
-				row['nick'],
-				row['userhost']
-			))
+    for row in cursor.fetchall():
+        f.write("AC %s %s\n" % (
+                row['nick'],
+                row['userhost']
+            ))
 
 
 def write_footer(f):
-	f.write("GDBV 3\n")
-	f.write("KID 0\n")
-	f.write("XID 0\n")
-	f.write("QID 0\n")
-	f.write("DE 1 0 0 0 0 0\n")
+    f.write("GDBV 3\n")
+    f.write("KID 0\n")
+    f.write("XID 0\n")
+    f.write("QID 0\n")
+    f.write("DE 1 0 0 0 0 0\n")
 
 if __name__ == "__main__":
-	main()
+    main()

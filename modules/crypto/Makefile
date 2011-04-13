@@ -17,6 +17,7 @@ SRCS =			\
 	ircservices.c		\
 	rawmd5.c		\
 	rawsha1.c		\
+	saltedsha1.c	\
 	sorservices.c
 
 CPPFLAGS	+= -I../../include
