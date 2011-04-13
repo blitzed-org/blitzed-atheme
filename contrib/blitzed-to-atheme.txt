@@ -1,0 +1,34 @@
+GENERAL
+-------
+
+- Blitzed SHA1 hashes require > 51 bytes. This requires changing
+  Atheme's common.h PASSLEN field to something more like 80.
+
+- The rawsha1 module in atheme does not support salt. A 
+  new saltedsha1 module has been created to support Blitzed 
+  salted hashes.
+
+NICKSERV
+--------
+
+- Blitzed linked nicks are are full fledged nick registrations. 
+  Atheme linked nicks are 'grouped' to an 'account', and inherit 
+  the account's properties.
+
+  Any children nicks in blitzed have been linked to their 
+  parent nick. This means that any meta data (e.g. flags) 
+  the child have are lost. They will inherit the settings 
+  of their parent.
+
+- URLs associated with Blitzed nicks have been converted to 
+  meta data fields on the nick of type 'url'.
+
+- Both the access and enforce module need to be enabled for 
+  blitzed style access and enforce lists.
+
+- Blitzed has a "access list number" that was lost when converting 
+  to atheme format. Atheme has ACCESS DEL <mask> instead of 
+  ACCESS DEL <num> like blitzed. 
+
+- SET HIDE EMAIL has been converted to SET HIDEMAIL
+- SET OPER no longer exists
