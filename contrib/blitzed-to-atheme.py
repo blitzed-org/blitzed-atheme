@@ -2,51 +2,47 @@ import MySQLdb
 import encodings.rot_13
 import time
 
+# Blitzed nickserv flags
 NS_FORBID = 0x0002
 NS_NO_EXPIRE = 0x0004
 NS_IDENTIFIED = 0x8000
 NS_RECOGNIZED = 0x4000
-#user comes from known address
 NS_ON_ACCESS = 0x2000
-#being held after enforcement
 NS_KILL_HELD = 0x1000
 NS_GUESTED = 0x0100
 NS_REGAINED = 0x0200
 NS_TEMPORARY = 0xFF00
-
-#/*! \brief SVSNICK others who take this nick. */
 NI_ENFORCE = 0x00000001
-# /*! \brief Don't recognise unless IDENTIFY'd. */
 NI_SECURE = 0x00000002
-# /*! \brief Don't allow user to change memo limit. */
 NI_MEMO_HARDMAX = 0x00000008
-# /*! \brief Notify of memos at signon and un-away. */
 NI_MEMO_SIGNON = 0x00000010
-# /*! \brief Notify of new memos when sent. */
 NI_MEMO_RECEIVE = 0x00000020
-# /*! \brief Don't show in NickServ LIST to non-services-admins. */
 NI_PRIVATE = 0x00000040
-# /*! \brief Don't show E-mail address in NickServ INFO. */
 NI_HIDE_EMAIL = 0x00000080
-# /*! \brief Don't show last seen address in NickServ INFO. */
 NI_HIDE_MASK = 0x00000100
-# /*! \brief Don't show last quit message in NickServ INFO. */
 NI_HIDE_QUIT = 0x00000200
-# /*! \brief SVSNICK in 20 seconds instead of 60. */
 NI_ENFORCEQUICK = 0x00000400
-# /*! \brief Don't add user to channel access lists. */
 NI_NOOP = 0x00000800
 NI_IRCOP = 0x00001000
-#/*! \brief Only a services admin can SETPASS this nick. */
 NI_MARKED = 0x00002000
-#/*! \brief Nobody can SENDPASS this nick. */
 NI_NOSENDPASS = 0x00004000
-#/*! \brief Activate NickServ AUTOJOIN functions. */
 NI_AUTOJOIN = 0x00008000
-#/* dont op/voice user in channels on identify */
 NI_AUTOPROMOTE = 0x00010000
-#/*! \brief This nick (and its links) cannot be used. */
 NI_SUSPENDED = 0x10000000
+
+# Blitzed channel flags
+CI_KEEPTOPIC=    0x00000001
+CI_SECUREOPS=    0x00000002
+CI_PRIVATE=  0x00000004
+CI_TOPICLOCK=    0x00000008
+CI_RESTRICTED=   0x00000010
+CI_LEAVEOPS= 0x00000020
+CI_SECURE=    0x00000040
+CI_FORBID=    0x00000080
+CI_NO_EXPIRE= 0x00000200
+CI_MEMO_HARDMAX=  0x00000400
+CI_VERBOSE=   0x00000800
+
 
 # Atheme nickserv flags
 #struct gflags mu_flags[] = {
@@ -104,19 +100,26 @@ NI_SUSPENDED = 0x10000000
 #    ['b'] = {CA_AKICK, 0, false,     "banned"},
 #};
 
-LANG_EN_US = 0
-LANG_JA_JIS= 1
-LANG_JA_EUC= 2
-LANG_JA_SJIS =   3
-LANG_ES=     4
-LANG_PT=     5
-LANG_FR=     6
-LANG_TR=     7
-LANG_IT=     8
-LANG_PSYCHO= 9
-LANG_DE=     10
-LANG_DK=     11
-LANG_SE=     12
+CMODE_MAP = {
+                0x00000001 : 0x00000001, # +i
+                0x00000002 : 0x00000008, # +m
+                0x00000004 : 0x00000010, # +n
+                0x00000008 : 0x00000040, # +p
+                0x00000010 : 0x00000080, # +s
+                0x00000020 : 0x00000100, # +t
+                0x00000040 : 0x00000002, # +k
+                0x00000080 : 0x00000004 # +l
+            }
+
+
+CFLAGS_MAP = {
+                CI_KEEPTOPIC : "k",
+                CI_SECUREOPS : "z",
+                CI_TOPICLOCK : "t",
+                CI_RESTRICTED : "r",
+                CI_NO_EXPIRE : "h",
+                CI_VERBOSE : "v"
+             }
 
 def main():
     f = open('services.db', 'w')
@@ -129,9 +132,11 @@ def main():
     write_nick_links(cursor, f)
     write_nick_access(cursor, f)
     write_memos(cursor, f)
+    write_channels(cursor, f)
     write_footer(f)
     
     f.close()
+
 
 def write_header(f):
     f.write("DBV 8\n")
@@ -257,6 +262,46 @@ def write_memos(cursor, f):
                 row['sender'],
                 row['time'],
                 text[0].encode('utf-8')
+            ))
+
+def cmode_convert(inflags):
+    outflags = 0
+    for flag in CMODE_MAP.keys():
+        if inflags & flag:
+            outflags |= CMODE_MAP[flag]
+    return outflags 
+
+def cflag_convert(inflags):
+    outflags = "+"
+    for flag in CFLAGS_MAP.keys():
+        if inflags & flag:
+            outflags += CFLAGS_MAP[flag]
+    return outflags
+
+def write_channels(cursor, f):
+    cursor.execute("SELECT * FROM channel WHERE time_registered > 0")
+
+    cflags_map = {
+                    CI_KEEPTOPIC : "k",
+                    CI_SECUREOPS : "z",
+                    CI_TOPICLOCK : "t",
+                 }
+
+    for row in cursor.fetchall():
+
+        flags = cflag_convert(row['flags']) 
+        mlock_on = cmode_convert(int(row['mlock_on']))
+        mlock_off = cmode_convert(int(row['mlock_off']))
+
+        f.write("MC %s %s %s %s %s %s %s %s\n" % (
+                row['name'],
+                row['time_registered'],
+                row['last_used'],
+                flags,
+                mlock_on,
+                mlock_off,
+                row['mlock_limit'],
+                row['mlock_key']
             ))
 
 def write_footer(f):

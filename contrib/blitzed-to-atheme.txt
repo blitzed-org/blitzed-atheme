@@ -66,6 +66,13 @@ NICKSERV
   the original forbid reason.
 - SUSPEND is now SET FREEZE, and these data have not been converted. 
 
+CHANSERV
+--------
+
+- SET SECURE is implied
+- SET SECUREOPS is now SET SECURE
+- SET LEAVEOPS no longer exists
+
 
 MEMOSERV
 --------
