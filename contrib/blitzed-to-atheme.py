@@ -100,6 +100,7 @@ CI_VERBOSE=   0x00000800
 #    ['b'] = {CA_AKICK, 0, false,     "banned"},
 #};
 
+#This is charybdhis sepecific
 CMODE_MAP = {
                 0x00000001 : 0x00000001, # +i
                 0x00000002 : 0x00000008, # +m
@@ -108,7 +109,10 @@ CMODE_MAP = {
                 0x00000010 : 0x00000080, # +s
                 0x00000020 : 0x00000100, # +t
                 0x00000040 : 0x00000002, # +k
-                0x00000080 : 0x00000004 # +l
+                0x00000080 : 0x00000004, # +l
+                0x00000100 : 0x00002000, # +R -> +r
+                0x00000400 : 0x00001000, # +c
+                0x00000800 : 0x00800000  # +O
             }
 
 
@@ -118,7 +122,8 @@ CFLAGS_MAP = {
                 CI_TOPICLOCK : "t",
                 CI_RESTRICTED : "r",
                 CI_NO_EXPIRE : "h",
-                CI_VERBOSE : "v"
+                CI_VERBOSE : "v",
+                CI_PRIVATE : "p"
              }
 
 def main():

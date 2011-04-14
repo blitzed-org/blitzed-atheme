@@ -69,10 +69,12 @@ NICKSERV
 CHANSERV
 --------
 
+- MLOCK +R is now +r
+- MLOCK +O needs charybdis extensions/chm_operonly.c +O 
+ 
 - SET SECURE is implied
 - SET SECUREOPS is now SET SECURE
 - SET LEAVEOPS no longer exists
-
 
 MEMOSERV
 --------
