@@ -69,6 +69,16 @@ NICKSERV
 CHANSERV
 --------
 
+- FOUNDER pass no longer exists. Ownership is by founder only.
+- SUCCESSOR still exists and has been converted
+
+- URL and DESCRIPTION no longer exist and have been converted 
+  as properties
+
+- AUTOLIMIT no longer exists
+- SET TOPICPREFIX no longer exists. TOPICPREFIX on atheme 
+  is an action, not a setting
+
 - MLOCK +R is now +r
 - MLOCK +O needs charybdis extensions/chm_operonly.c +O 
  

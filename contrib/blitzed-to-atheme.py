@@ -331,23 +331,35 @@ def write_channels(db, cursor, f):
                 chan['mlock_key']
             ))
 
+        if len(chan['url']) > 0:
+            f.write("MDC %s url %s\n" % (
+                    chan['name'],
+                    chan['url']
+                ))
+
+        if len(chan['description']) > 0:
+            f.write("MDC %s description %s\n" % (
+                    chan['name'],
+                    chan['description']
+                ))
+
         if len(chan['entry_message']) > 0:
             f.write("MDC %s private:entrymsg %s\n" % (
-                chan['name'],
-                chan['entry_message']
+                    chan['name'],
+                    chan['entry_message']
                 ))
         if len(chan['last_topic']) > 0:
             f.write("MDC %s private:topic:text %s\n" % (
-                chan['name'],
-                chan['last_topic']
+                    chan['name'],
+                    chan['last_topic']
                 ))
             f.write("MDC %s private:topic:setter %s\n" % (
-                chan['name'],
-                chan['last_topic_setter']
+                    chan['name'],
+                    chan['last_topic_setter']
                 ))
             f.write("MDC %s private:topic:ts %lu\n" % (
-                chan['name'],
-                chan['last_topic_time']
+                    chan['name'],
+                    chan['last_topic_time']
                 ))
 
         write_channel_access(db, chan, f)
