@@ -76,6 +76,23 @@ CHANSERV
 - SET SECUREOPS is now SET SECURE
 - SET LEAVEOPS no longer exists
 
+- The AKICK level has been deprecated and AKICK set access in 
+  atheme is given to anyway with ACL change access. Anyone with 
+  AKICK access is given the +r flag
+- The UNBAN level is deprecated, and cannot be carried over because 
+  UNBAN -and- BAN are combined in atheme as the +r flag.
+- LEVEL LIST and LEVEL CHANGE are deprecated
+- SYNC command is deprecated
+- KICK access is deprecated and now falls under +r
+
+- Flags for all nicks associated with an account are combined.
+  Because of this combining, modification times for these flags 
+  are set to now()
+- Founder gets flags +AFORfiorstv
+- Access flags for channel access lists for each user are created 
+  based on the user's original level, and the level settings 
+  for their channel
+
 MEMOSERV
 --------
 

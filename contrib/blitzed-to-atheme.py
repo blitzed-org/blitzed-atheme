@@ -126,6 +126,27 @@ CFLAGS_MAP = {
                 CI_PRIVATE : "p"
              }
 
+LEVELS_MAP = {
+                0 : (5,      "i"),       #CA_INVITE
+                1 : (10,     "r"),       #CA_AKICK (deprecated to ACL-CHANGE)
+                2 : (-10000, "s"),       #CA_SET
+                #                        #CA_UNBAN (deprecated)
+                4 : (5,      "O"),       #CA_AUTOOP
+                #                        #CA_AUTODEOP (deprecated)
+                6 : (3,      "V"),       #CA_AUTOVOICE
+                7 : (5,      "o"),       #CA_OPDEOP
+                8 : (1,      "A"),       #CA_ACCESS_LIST
+                9 : (-10000, "R"),       #CA_CLEAR
+                10: (-2,     "b"),       #CA_NOJOIN
+                11: (10,     "f"),       #CA_ACCESS_CHANGE
+                #                        #CA_MEMO_READ (deprecated)
+                #                        #CA_LEVEL_LIST (deprecated)
+                #                        #CA_LEVEL_CHANGE (deprecated)
+                #                        #CA_SYNC (deprecated)
+                #                        #CA_KICK matches +r (KICK/BAN)
+
+             }
+
 def main():
     f = open('services.db', 'w')
     db = MySQLdb.connect("localhost", "services", "services", "services")
@@ -137,7 +158,7 @@ def main():
     write_nick_links(cursor, f)
     write_nick_access(cursor, f)
     write_memos(cursor, f)
-    write_channels(cursor, f)
+    write_channels(db, cursor, f)
     write_footer(f)
     
     f.close()
@@ -283,8 +304,9 @@ def cflag_convert(inflags):
             outflags += CFLAGS_MAP[flag]
     return outflags
 
-def write_channels(cursor, f):
-    cursor.execute("SELECT * FROM channel WHERE time_registered > 0")
+def write_channels(db, cursor, f):
+    
+    cursor.execute("SELECT * FROM channel WHERE time_registered > 0 AND founder > 0")
 
     cflags_map = {
                     CI_KEEPTOPIC : "k",
@@ -292,22 +314,95 @@ def write_channels(cursor, f):
                     CI_TOPICLOCK : "t",
                  }
 
-    for row in cursor.fetchall():
+    for chan in cursor.fetchall():
 
-        flags = cflag_convert(row['flags']) 
-        mlock_on = cmode_convert(int(row['mlock_on']))
-        mlock_off = cmode_convert(int(row['mlock_off']))
+        flags = cflag_convert(chan['flags']) 
+        mlock_on = cmode_convert(int(chan['mlock_on']))
+        mlock_off = cmode_convert(int(chan['mlock_off']))
 
         f.write("MC %s %s %s %s %s %s %s %s\n" % (
-                row['name'],
-                row['time_registered'],
-                row['last_used'],
+                chan['name'],
+                chan['time_registered'],
+                chan['last_used'],
                 flags,
                 mlock_on,
                 mlock_off,
-                row['mlock_limit'],
-                row['mlock_key']
+                chan['mlock_limit'],
+                chan['mlock_key']
             ))
+
+        write_channel_access(db, chan, f)
+
+def write_channel_access(db, chan, f):
+
+    cursor = db.cursor(cursorclass=MySQLdb.cursors.DictCursor)
+ 
+    #make a copy of default levels
+    levels = LEVELS_MAP.copy() 
+
+    cursor.execute("SELECT * FROM chanlevel " +
+                   "WHERE channel_id=%s" % chan['channel_id'])
+
+    #update default level with any changes from DB
+    for row in cursor.fetchall():
+        if row['what'] in levels:
+            entry = levels[row['what']]
+            levels[row['what']] = (row['level'], entry[1])
+
+    # nick -> set of flags
+    access_list = dict()
+    cursor.execute("SELECT * FROM chanaccess WHERE channel_id=%s" % chan['channel_id'])
+
+    #add founder and successor now
+    founder_nick = find_true_nick(db, chan['founder'])
+    access_list[founder_nick] = set(["F","A","O","R","f","i","o","r","s","t","v"])
+
+    if len(founder_nick) == 0:
+        return
+
+    if chan['successor'] != 0:
+        successor_nick = find_true_nick(db, chan['successor'])
+        if successor_nick not in access_list:
+             access_list[successor_nick] = set(["S"])
+
+    #combine flags of nicks under same account
+    #into a set before writing out the master nick
+    for row in cursor.fetchall():
+        nick = find_true_nick(db, row['nick_id'])
+        if not nick in access_list:
+            access_list[nick] = set()
+
+        for level in levels.values():
+            if (int(row['level']) >= level[0]) and (level[0]  >= 0):
+                access_list[nick].add(level[1])
+            if (int(row['level']) <= level[0]) and (level[0]   < 0):
+                access_list[nick].add(level[1])
+
+    for nick in access_list.keys():
+        flags = "+" + "".join(access_list[nick])
+        f.write("CA %s %s %s %u\n" % (
+                chan['name'],
+                nick,
+                flags,
+                int(time.time()) 
+           ))
+
+def find_true_nick(db, nick_id):
+
+    cursor = db.cursor(cursorclass=MySQLdb.cursors.DictCursor)
+    cursor.execute("SELECT nick,link_id FROM nick WHERE nick_id=%u" % nick_id)
+    row = cursor.fetchone()
+
+    if row == None:
+        return ""
+
+    if (row['link_id'] == 0):
+        return row['nick']
+  
+    cursor.execute("SELECT nick,nick_id FROM nick WHERE nick_id=%u" % row['link_id'])
+    row = cursor.fetchone()
+    
+    return row['nick']
 
 def write_footer(f):
     f.write("GDBV 3\n")
