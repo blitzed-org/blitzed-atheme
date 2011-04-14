@@ -332,6 +332,7 @@ def write_channels(db, cursor, f):
             ))
 
         write_channel_access(db, chan, f)
+        write_channel_bans(db, chan, f)
 
 def write_channel_access(db, chan, f):
 
@@ -386,6 +387,32 @@ def write_channel_access(db, chan, f):
                 flags,
                 int(time.time()) 
            ))
+
+def write_channel_bans(db, chan, f):
+
+    cursor = db.cursor(cursorclass=MySQLdb.cursors.DictCursor)
+
+    cursor.execute("SELECT * FROM akick " +
+                   "WHERE channel_id=%s" % chan['channel_id'])
+
+
+    for row in cursor.fetchall():
+        #akick on a nick
+        if row['nick_id'] > 0:
+            target = find_true_nick(db, row['nick_id'])
+        else:
+            target = row['mask']
+        
+        f.write("CA %s %s +b %u\n" % (
+                chan['name'],
+                target,
+                row['added']
+            ))
+        f.write("MDA %s:%s reason %s\n" % (
+                chan['name'],
+                target,
+                row['reason']
+            ))
 
 def find_true_nick(db, nick_id):
 
