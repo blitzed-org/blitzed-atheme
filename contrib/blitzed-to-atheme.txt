@@ -103,6 +103,12 @@ CHANSERV
   based on the user's original level, and the level settings 
   for their channel
 
+OPERSERV
+--------
+
+- Quarantine list has been convered to RWATCH entries with kline
+  and case sensitivity.
+
 MEMOSERV
 --------
 

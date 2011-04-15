@@ -148,21 +148,41 @@ LEVELS_MAP = {
              }
 
 def main():
-    f = open('services.db', 'w')
+    servicesdb = open('services.db', 'w')
+    rwatchdb = open('rwatch.db', 'w')
     db = MySQLdb.connect("localhost", "services", "services", "services")
     cursor = db.cursor(cursorclass=MySQLdb.cursors.DictCursor)
 
-    write_header(f)
-    write_nicks(cursor, f)
-    write_forbidden_nicks(cursor, f)
-    write_nick_links(cursor, f)
-    write_nick_access(cursor, f)
-    write_memos(cursor, f)
-    write_channels(db, cursor, f)
-    write_footer(f)
-    
-    f.close()
+    write_header(servicesdb)
+    write_nicks(cursor, servicesdb)
+    write_forbidden_nicks(cursor, servicesdb)
+    write_nick_links(cursor, servicesdb)
+    write_nick_access(cursor, servicesdb)
+    write_memos(cursor, servicesdb)
+    write_channels(db, cursor, servicesdb)
+    write_footer(servicesdb)
+   
+    write_quarantine(cursor, rwatchdb)
 
+    servicesdb.close()
+    rwatchdb.close()
+
+def find_true_nick(db, nick_id):
+
+    cursor = db.cursor(cursorclass=MySQLdb.cursors.DictCursor)
+    cursor.execute("SELECT nick,link_id FROM nick WHERE nick_id=%u" % nick_id)
+    row = cursor.fetchone()
+
+    if row == None:
+        return ""
+
+    if (row['link_id'] == 0):
+        return row['nick']
+  
+    cursor.execute("SELECT nick,nick_id FROM nick WHERE nick_id=%u" % row['link_id'])
+    row = cursor.fetchone()
+    
+    return row['nick']
 
 def write_header(f):
     f.write("DBV 8\n")
@@ -445,22 +465,17 @@ def write_channel_bans(db, chan, f):
                 row['reason']
             ))
 
-def find_true_nick(db, nick_id):
+def write_quarantine(cursor, f):
+   
+    cursor.execute("SELECT * FROM quarantine")
 
-    cursor = db.cursor(cursorclass=MySQLdb.cursors.DictCursor)
-    cursor.execute("SELECT nick,link_id FROM nick WHERE nick_id=%u" % nick_id)
-    row = cursor.fetchone()
-
-    if row == None:
-        return ""
-
-    if (row['link_id'] == 0):
-        return row['nick']
-  
-    cursor.execute("SELECT nick,nick_id FROM nick WHERE nick_id=%u" % row['link_id'])
-    row = cursor.fetchone()
-    
-    return row['nick']
+    for row in cursor.fetchall():
+        f.write("RW 0 %s\n" % (
+                row['regex']
+            ))
+        f.write("RR 1 %s\n" % (
+                row['reason']
+            ))
 
 def write_footer(f):
     f.write("GDBV 3\n")
