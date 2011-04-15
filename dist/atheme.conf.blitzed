@@ -182,7 +182,7 @@ loadmodule "modules/nickserv/vhost";
  *  ACLs. This is intentional.
  */
 loadmodule "modules/chanserv/main";
-loadmodule "modules/chanserv/access";
+#loadmodule "modules/chanserv/access";
 loadmodule "modules/chanserv/akick";
 loadmodule "modules/chanserv/ban";
 #loadmodule "modules/chanserv/unban_self";
@@ -214,14 +214,14 @@ loadmodule "modules/chanserv/register";
 loadmodule "modules/chanserv/set_core";
 loadmodule "modules/chanserv/set_email";
 loadmodule "modules/chanserv/set_entrymsg";
-loadmodule "modules/chanserv/set_fantasy";
+#loadmodule "modules/chanserv/set_fantasy";
 loadmodule "modules/chanserv/set_founder";
 #loadmodule "modules/chanserv/set_gameserv";
 loadmodule "modules/chanserv/set_guard";
 loadmodule "modules/chanserv/set_keeptopic";
 #loadmodule "modules/chanserv/set_limitflags";
 loadmodule "modules/chanserv/set_mlock";
-loadmodule "modules/chanserv/set_prefix";
+#loadmodule "modules/chanserv/set_prefix";
 #loadmodule "modules/chanserv/set_private";
 loadmodule "modules/chanserv/set_property";
 loadmodule "modules/chanserv/set_restricted";
@@ -282,7 +282,7 @@ loadmodule "modules/chanserv/why";
 loadmodule "modules/operserv/main";
 loadmodule "modules/operserv/akill";
 #loadmodule "modules/operserv/clearchan";
-#loadmodule "modules/operserv/clones";
+loadmodule "modules/operserv/clones";
 loadmodule "modules/operserv/compare";
 #loadmodule "modules/operserv/greplog";
 loadmodule "modules/operserv/help";
@@ -307,7 +307,7 @@ loadmodule "modules/operserv/rnc";
 loadmodule "modules/operserv/rwatch";
 loadmodule "modules/operserv/sgline";
 loadmodule "modules/operserv/shutdown";
-#loadmodule "modules/operserv/soper";
+loadmodule "modules/operserv/soper";
 loadmodule "modules/operserv/specs";
 loadmodule "modules/operserv/sqline";
 loadmodule "modules/operserv/update";
@@ -513,13 +513,13 @@ serverinfo {
 	 * unique on the IRC network and contain at least one dot, but does
 	 * not have to be equal to any DNS name.
 	 */
-	name = "services.int";
+	name = "services.blitzed.org";
 
 	/* desc
 	 * The ``server comment'' we send to the IRC network.
 	 * If you want server hiding, prefix your desc with "(H)"
 	 */
-	desc = "Atheme IRC Services";
+	desc = "Blitzed IRC Services";
 
 	/* numeric
 	 * Some protocol drivers (Charybdis, Ratbox2, Hybrid, P10, IRCNet)
@@ -536,24 +536,24 @@ serverinfo {
 	/* (*)netname
 	 * The name of your network.
 	 */
-	netname = "misconfigured network";
+	netname = "Blitzed IRC Network";
 
 	/* (*)hidehostsuffix
 	 * P10 +x host hiding gives <account>.<hidehostsuffix>.
 	 * If using +x on asuka/bircd/undernet, this must agree
 	 * with F:HIDDEN_HOST.
 	 */
-	hidehostsuffix = "users.misconfigured";
+	hidehostsuffix = "blitzed.org";
 
 	/* (*)adminname
 	 * The name of the person running this service.
 	 */
-	adminname = "misconfigured admin";
+	adminname = "Blitzed Admins";
 
 	/* (*)adminemail
 	 * The email address of the person running this service.
 	 */
-	adminemail = "misconfigured@admin.tld";
+	adminemail = "admin@blitzed.org";
 
 	/* (*)mta
 	 * The full path to your mail transfer agent.
@@ -717,7 +717,7 @@ nickserv {
 	/* (*)host
 	 * The hostname we want NickServ to have.
 	 */
-	host = "services.int";
+	host = "blitzed.org";
 
 	/* (*)real
 	 * The realname (gecos) information we want NickServ to have.
@@ -791,7 +791,7 @@ chanserv {
 	/* (*)host
 	 * The hostname we want the client to have.
 	 */
-	host = "services.int";
+	host = "blitzed.org";
 
 	/* (*)real
 	 * The GECOS of the client.
@@ -925,7 +925,7 @@ global {
 	/* (*)host
 	 * The hostname used for this client.
 	 */
-	host = "services.int";
+	host = "blitzed.org";
 
 	/* (*)real
 	 * The GECOS (real name) of the client.
@@ -954,7 +954,7 @@ infoserv {
 	/* (*)host
 	 * The hostname used for this client,
 	 */
-	host = "services.int";
+	host = "blitzed.org";
 
 	/* (*)real
 	 * The GECOS (real name) of the client.
@@ -990,7 +990,7 @@ operserv {
 	/* (*)host
 	 * The hostname used for this client.
 	 */
-	host = "services.int";
+	host = "blitzed.org";
 
 	/* (*)real
 	 * The GECOS (real name) of the client.
@@ -1025,7 +1025,7 @@ saslserv {
 	/* (*)host
 	 * The hostname we want SaslServ to have.
 	 */
-	host = "services.int";
+	host = "blitzed.org";
 
 	/* (*)real
 	 * The realname (gecos) information we want SaslServ to have.
@@ -1054,7 +1054,7 @@ memoserv {
 	/* (*)host
 	 * The hostname we want MemoServ to have.
 	 */
-	host = "services.int";
+	host = "blitzed.org";
 
 	/* (*)real
 	 * The realname (gecos) information we want MemoServ to have.
@@ -1088,7 +1088,7 @@ gameserv {
 	/* (*)host
 	 * The hostname used for this client.
 	 */
-	host = "services.int";
+	host = "blitzed.org";
 
 	/* (*)real
 	 * The GECOS (real name) of the client.
@@ -1122,7 +1122,7 @@ botserv {
 	/* (*)host
 	 * The hostname used for this client.
 	 */
-	host = "services.int";
+	host = "blitzed.org";
 
 	/* (*)real
 	 * The GECOS (real name) of the client.
@@ -1157,7 +1157,7 @@ groupserv {
 	/* (*)host
 	 * The hostname we want GroupServ to have.
 	 */
-	host = "services.int";
+	host = "blitzed.org";
 
 	/* (*)real
 	 * The realname (gecos) information we want GroupServ to have.
@@ -1207,7 +1207,7 @@ hostserv {
 	/* (*)host
 	 * The hostname used for this client.
 	 */
-	host = "services.int";
+	host = "blitzed.org";
 
 	/* (*)real
 	 * The GECOS (real name) of the client.
@@ -1250,7 +1250,7 @@ helpserv {
 	/* (*)host
 	 * The hostname we want HelpServ to have.
 	 */
-	host = "services.int";
+	host = "blitzed.org";
 
 	/* (*)real
 	 * The realname (gecos) information we want HelpServ to have.
@@ -1276,7 +1276,7 @@ alis {
 	/* (*)host
 	 * The hostname we want ALIS to have.
 	 */
-	host = "services.int";
+	host = "blitzed.org";
 
 	/* (*)real
 	 * The realname (gecos) information we want ALIS to have.
@@ -1395,7 +1395,7 @@ general {
 	 * Network help channel. Shown to users when they request
 	 * help for a command that doesn't exist.
 	 */
-	#helpchan = "#help";
+	helpchan = "#help";
 
 	/* (*)helpurl
 	 * Network webpage for services help. Shown to users when they
@@ -1468,7 +1468,7 @@ general {
 	 * Valid values are: hold, secure, verbose, verbose_ops, keeptopic,
 	 * topiclock, guard, private, limitflags and none.
 	 */
-	cflags = { verbose; guard; };
+	cflags = { verbose; };
 
 	/* (*)raw
 	 * Do you want to allow SRAs to use the RAW and INJECT commands?
@@ -1520,7 +1520,7 @@ general {
 	 * The default expire time for KLINE's in days.
 	 * Setting this to 0 makes all KLINE's permanent.
 	 */
-	kline_time = 7;
+	kline_time = 1;
 
 	/* (*)clone_time
 	 * This is the default expiry time for CLONE exemptions in minutes.
@@ -1682,7 +1682,7 @@ operclass "sra" {
 /* (*) Operator blocks specify accounts with certain privileges
  * Oper classes must be defined before they are used in operator blocks.
  */
-operator "jilles" {
+operator "strtok" {
 	/* operclass */
 	operclass = "sra";
 	/* password
