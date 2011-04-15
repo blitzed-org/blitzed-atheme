@@ -473,7 +473,7 @@ def write_quarantine(cursor, f):
         f.write("RW 0 %s\n" % (
                 row['regex']
             ))
-        f.write("RR 1 %s\n" % (
+        f.write("RR 2 %s\n" % (
                 row['reason']
             ))
 
