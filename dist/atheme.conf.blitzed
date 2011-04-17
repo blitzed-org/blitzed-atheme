@@ -1663,11 +1663,11 @@ operclass "sra" {
 	};
 
 	privs {
-		#operserv:massakill;
+		operserv:massakill;
 		#operserv:akill-anymask;
 		operserv:noop;
 		operserv:grant;
-		#operserv:override;
+		operserv:override;
 	};
 
 	/* needoper
